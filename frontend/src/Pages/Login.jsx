@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input, Button } from "antd";
+import { Input, Button, message } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import axios from "axios";
 
@@ -9,19 +9,40 @@ export const Login = () => {
   const emailref = useRef();
   const passwordref = useRef();
 
-  const checkLogin = () => {
+  const checkLogin = async () => {
     const data = {
       email: emailref.current,
       password: passwordref.current,
     };
 
-    console.log(data);
-    axios.post("http://localhost:9000/api/user/set");
+    const response = await axios.post(
+      "http://localhost:9000/api/user/get",
+      data
+    );
+
+    // console.log(response.data[0].messid === "");
+    if (response.status === 200) {
+      if (response.data.length === 0) {
+        message.error("Invalid User Or Password");
+      } else {
+        message.success("Login Successfull !!!");
+        if (response.data[0].messid === "")
+          navigate("/addmessinfo/" + response.data[0]._id);
+        else
+          navigate("/user", {
+            state: {
+              messname: response.data[0].messname,
+              location: response.data[0].location,
+              id : response.data[0]._id
+            },
+          });
+      }
+    }
   };
 
   return (
     <div className="flex bg-gradient-to-r from-cyan-500 to-blue-800 flex-col justify-center items-center w-screen h-screen">
-      <div className="flex bg-white justify-center rounded-lg flex-col w-3/12 h-3/5 text-center gap-10 border-2 border-slate-400">
+      <div className="flex shadow-md bg-white justify-center rounded-lg flex-col w-3/12 h-3/5 text-center gap-10">
         <p className="text-3xl">Login Page</p>
         <div className="flex flex-col gap-3">
           <section className="">
@@ -35,6 +56,9 @@ export const Login = () => {
           </section>
           <section className="flex gap-3 justify-center items-center">
             <Input.Password
+              onChange={(event) => {
+                passwordref.current = event.target.value;
+              }}
               placeholder="Password"
               iconRender={(visible) =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />

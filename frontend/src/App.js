@@ -7,6 +7,7 @@ import { Mess } from "./Pages/Mess";
 import { useState } from "react";
 import { AddMessInfo } from "./Pages/AddMessInfo";
 import { Register } from "./Pages/Register";
+import { User } from "./Pages/User";
 
 function App() {
   const [loggedin, setloggedin] = useState(false);
@@ -18,7 +19,8 @@ function App() {
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/register" element={<Register />} />
         <Route exact path="/messes" element={<Mess />} />
-        <Route exact path="/addmessinfo" element={<AddMessInfo />} />
+        <Route exact path="/addmessinfo/:id" element={<AddMessInfo />} />
+        <Route exact path="/user" element={<User />} />
       </Routes>
     </Router>
   );
